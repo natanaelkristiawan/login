@@ -136,6 +136,7 @@ class PublicController extends Controller
     }
 
     $user->password = bcrypt($request->password);
+    $user->forgot_token = null;
     $user->save();
 
 
