@@ -36,7 +36,7 @@
 
 <script>
     export default {
-        props : ['googlelink', 'users'],
+        props : ['googlelink', 'users', 'base'],
         data() {
             return {
                 isLoggedIn: false,
@@ -66,7 +66,7 @@
             handleLogin() {
                 // send axios request the login route
                 axios.get('/sanctum/csrf-cookie').then(response => {
-                    axios.post('/login', this.formData).then(response => {
+                    axios.post(this.base+'/login', this.formData).then(response => {
                         localStorage.setItem('auth', true)
                         this.isLoggedIn = true;
                         this.getSecrets();
@@ -75,15 +75,15 @@
             },
 
             getSecrets() {
-                axios.get('/api/secrets').then(response => {
+                axios.get(this.base+'/api/secrets').then(response => {
                     this.secrets = response.data;
                 })
                 
             },
 
             logout() {
-                axios.get('/sanctum/csrf-cookie').then(response => {
-                    axios.post('/logout', this.formData).then(response => {
+                axios.get(this.base+'/sanctum/csrf-cookie').then(response => {
+                    axios.post(this.base+'/logout', this.formData).then(response => {
                         this.isLoggedIn = false;
                         localStorage.removeItem("auth");
                     })
