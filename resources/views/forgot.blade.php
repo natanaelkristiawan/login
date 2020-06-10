@@ -1,0 +1,1 @@
+<a href="{{ $link }}">Link forgot</a>

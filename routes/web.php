@@ -18,6 +18,10 @@ Route::get('/', 'PublicController@index')->name('public.index');
 Route::get('google-login', 'PublicController@googleLogin')->name('public.googleLogin');
 Route::get('google-connect', 'PublicController@googleConnect'); 
 
+Route::post('forgot-password', 'PublicController@forgotPassword'); 
+Route::get('reset/{token}', 'PublicController@resetPasswordRender')->name('public.reset'); 
+Route::post('reset-password', 'PublicController@resetPassword'); 
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');

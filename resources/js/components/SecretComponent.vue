@@ -18,6 +18,7 @@
                     </div>
                 </form>
                 <a href="#"  v-on:click="showRegister">Register</a>
+                <a href="#"  v-on:click="showForgot">Forgot Password</a>
             </div> 
             <div class="col-6 offset-3" v-if="!loginField">
                 <h1>Sanctum Register</h1>
@@ -42,7 +43,23 @@
                     </div>
                 </form>
                  <a href="#" v-on:click="showLogin">Login</a>
+                 <a href="#"  v-on:click="showForgot">Forgot Password</a>
             </div>
+
+            <div class="col-6 offset-3 mt-5" v-if="forgotPassword">
+                <h1>Forgot</h1>
+                <form action="#" @submit.prevent="handleReset">
+                    <div class="form-row">
+                        <input type="email" name="email" class="form-control" v-model="formForgot.email" placeholder="email">
+                        <span v-text="error.email_reset"></span>
+                    </div> 
+                     <div class="form-row">
+                        <button type="submit" class="btn btn-primary">SendMail</button>
+                        <button type="button" v-on:click="hideForgot" class="ml-2 btn btn-danger">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
         </div>
         
         <div class="row mt-4" v-if="isLoggedIn">
@@ -65,10 +82,14 @@
         data() {
             return {
                 isLoggedIn: false,
+                forgotPassword: false,
                 secrets: [],
                 formData : {
                     email : '',
                     password : ''
+                },
+                formForgot : {
+                    email : ''
                 },
                 formRegister : {
                     email : '',
@@ -77,7 +98,8 @@
                 },
                 error : {
                     password : '',
-                    email : ''
+                    email : '',
+                    email_reset: ''
                 },
                 google : '',
                 login : true,
@@ -116,6 +138,7 @@
                     axios.post(this.base+'/register', this.formRegister).then(response => {
                         localStorage.setItem('auth', true)
                         this.isLoggedIn = true;
+                        
                         this.getSecrets();
                     }).catch(error => {
                         this.error.password = error.response.data.errors.password[0]
@@ -124,6 +147,16 @@
                 })
             },
 
+            handleReset() {
+                 axios.get(this.base+'/sanctum/csrf-cookie').then(response => {
+                    axios.post(this.base+'/forgot-password', this.formForgot).then(response => {
+                        this.hideForgot();
+                        alert('checkemail')
+                    }).catch(error => {
+                        this.error.email_reset = error.response.data.message
+                    })
+                })
+            },
             getSecrets() {
                 axios.get(this.base+'/sanctum/csrf-cookie').then(response => {
                     axios.get(this.base+'/api/secrets').then(response => {
@@ -144,11 +177,20 @@
 
             showLogin() {
                 this.loginField = true
+                this.hideForgot();
             },
 
             showRegister() {
                 this.loginField = false
+                this.hideForgot();
             },
+
+            showForgot() {
+                this.forgotPassword = true
+            },
+            hideForgot() {
+                this.forgotPassword = false
+            }
 
         }
     }
