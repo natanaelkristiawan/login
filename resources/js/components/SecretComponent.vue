@@ -65,7 +65,7 @@
         methods: {
             handleLogin() {
                 // send axios request the login route
-                axios.get('/sanctum/csrf-cookie').then(response => {
+                axios.get(this.base+'/sanctum/csrf-cookie').then(response => {
                     axios.post(this.base+'/login', this.formData).then(response => {
                         localStorage.setItem('auth', true)
                         this.isLoggedIn = true;
@@ -75,8 +75,10 @@
             },
 
             getSecrets() {
-                axios.get(this.base+'/api/secrets').then(response => {
-                    this.secrets = response.data;
+                axios.get(this.base+'/sanctum/csrf-cookie').then(response => {
+                    axios.get(this.base+'/api/secrets').then(response => {
+                        this.secrets = response.data;
+                    })
                 })
                 
             },
