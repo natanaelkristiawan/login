@@ -12,7 +12,7 @@
     </head>
     <body>
         <div class="flex-center position-ref full-height" id="app">
-           <secret-component :base="{{ url('') }}" :googleLink="{{ json_encode(route('public.googleLogin')) }}" :users="{{ Auth::check() == true ? 'true' : 'false' }}"></secret-component>
+           <secret-component :base="{{ json_encode(url('/')) }}" :googleLink="{{ json_encode(route('public.googleLogin')) }}" :users="{{ Auth::check() == true ? 'true' : 'false' }}"></secret-component>
         </div>
 
         <script type="text/javascript" src="{{ asset('js/app.js') }}"></script>
