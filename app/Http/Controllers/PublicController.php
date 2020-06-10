@@ -52,7 +52,7 @@ class PublicController extends Controller
       );
 
       // update data
-      $customer = Customers::updateOrCreate(array('email'=>$emailCustomer->email, 'id' => $emailCustomer->id), $dataInsert);
+      $customer = User::updateOrCreate(array('email'=>$emailCustomer->email, 'id' => $emailCustomer->id), $dataInsert);
     }
     // force login
     Auth::guard('web')->loginUsingId($customer->id);

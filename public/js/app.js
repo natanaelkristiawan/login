@@ -1977,8 +1977,33 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['googlelink', 'users'],
+  props: ['googlelink', 'users', 'base'],
   data: function data() {
     return {
       isLoggedIn: false,
@@ -1987,7 +2012,18 @@ __webpack_require__.r(__webpack_exports__);
         email: '',
         password: ''
       },
-      google: ''
+      formRegister: {
+        email: '',
+        name: '',
+        password: ''
+      },
+      error: {
+        password: '',
+        email: ''
+      },
+      google: '',
+      login: true,
+      loginField: true
     };
   },
   created: function created() {
@@ -2010,8 +2046,8 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       // send axios request the login route
-      axios.get('/sanctum/csrf-cookie').then(function (response) {
-        axios.post('/login', _this.formData).then(function (response) {
+      axios.get(this.base + '/sanctum/csrf-cookie').then(function (response) {
+        axios.post(_this.base + '/login', _this.formData).then(function (response) {
           localStorage.setItem('auth', true);
           _this.isLoggedIn = true;
 
@@ -2019,22 +2055,46 @@ __webpack_require__.r(__webpack_exports__);
         });
       });
     },
-    getSecrets: function getSecrets() {
+    handleRegister: function handleRegister() {
       var _this2 = this;
 
-      axios.get('/api/secrets').then(function (response) {
-        _this2.secrets = response.data;
+      // send axios request the login route
+      axios.get(this.base + '/sanctum/csrf-cookie').then(function (response) {
+        axios.post(_this2.base + '/register', _this2.formRegister).then(function (response) {
+          localStorage.setItem('auth', true);
+          _this2.isLoggedIn = true;
+
+          _this2.getSecrets();
+        })["catch"](function (error) {
+          _this2.error.password = error.response.data.errors.password[0];
+          _this2.error.email = error.response.data.errors.email[0];
+        });
+      });
+    },
+    getSecrets: function getSecrets() {
+      var _this3 = this;
+
+      axios.get(this.base + '/sanctum/csrf-cookie').then(function (response) {
+        axios.get(_this3.base + '/api/secrets').then(function (response) {
+          _this3.secrets = response.data;
+        });
       });
     },
     logout: function logout() {
-      var _this3 = this;
+      var _this4 = this;
 
-      axios.get('/sanctum/csrf-cookie').then(function (response) {
-        axios.post('/logout', _this3.formData).then(function (response) {
-          _this3.isLoggedIn = false;
+      axios.get(this.base + '/sanctum/csrf-cookie').then(function (response) {
+        axios.post(_this4.base + '/logout', _this4.formData).then(function (response) {
+          _this4.isLoggedIn = false;
           localStorage.removeItem("auth");
         });
       });
+    },
+    showLogin: function showLogin() {
+      this.loginField = true;
+    },
+    showRegister: function showRegister() {
+      this.loginField = false;
     }
   }
 });
@@ -38279,100 +38339,297 @@ var render = function() {
   return _c("div", { staticClass: "container" }, [
     !_vm.isLoggedIn
       ? _c("div", { staticClass: "row mt-4" }, [
-          _c("div", { staticClass: "col-6 offset-3" }, [
-            _c("h1", [_vm._v("Sanctum Login")]),
-            _vm._v(" "),
-            _c(
-              "form",
-              {
-                attrs: { action: "#" },
-                on: {
-                  submit: function($event) {
-                    $event.preventDefault()
-                    return _vm.handleLogin($event)
-                  }
-                }
-              },
-              [
-                _c("div", { staticClass: "form-row" }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.formData.email,
-                        expression: "formData.email"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: {
-                      type: "email",
-                      name: "email",
-                      placeholder: "Email Address"
-                    },
-                    domProps: { value: _vm.formData.email },
+          _vm.loginField
+            ? _c("div", { staticClass: "col-6 offset-3" }, [
+                _c("h1", [_vm._v("Sanctum Login")]),
+                _vm._v(" "),
+                _c(
+                  "form",
+                  {
+                    attrs: { action: "#" },
                     on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(_vm.formData, "email", $event.target.value)
+                      submit: function($event) {
+                        $event.preventDefault()
+                        return _vm.handleLogin($event)
                       }
                     }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "form-row" }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.formData.password,
-                        expression: "formData.password"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: {
-                      type: "password",
-                      placeholder: "Password",
-                      name: "password"
-                    },
-                    domProps: { value: _vm.formData.password },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
+                  },
+                  [
+                    _c("div", { staticClass: "form-row" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.formData.email,
+                            expression: "formData.email"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "email",
+                          name: "email",
+                          placeholder: "Email Address"
+                        },
+                        domProps: { value: _vm.formData.email },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.formData, "email", $event.target.value)
+                          }
                         }
-                        _vm.$set(_vm.formData, "password", $event.target.value)
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-row" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.formData.password,
+                            expression: "formData.password"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "password",
+                          placeholder: "Password",
+                          name: "password"
+                        },
+                        domProps: { value: _vm.formData.password },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.formData,
+                              "password",
+                              $event.target.value
+                            )
+                          }
+                        }
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-row" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-primary",
+                          attrs: { type: "submit" }
+                        },
+                        [_vm._v("Sign in")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "a",
+                        {
+                          staticClass: "btn btn-primary ml-3",
+                          staticStyle: { color: "white" },
+                          attrs: { href: _vm.google }
+                        },
+                        [_vm._v("Google Login")]
+                      )
+                    ])
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  { attrs: { href: "#" }, on: { click: _vm.showRegister } },
+                  [_vm._v("Register")]
+                )
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          !_vm.loginField
+            ? _c("div", { staticClass: "col-6 offset-3" }, [
+                _c("h1", [_vm._v("Sanctum Register")]),
+                _vm._v(" "),
+                _c(
+                  "form",
+                  {
+                    attrs: { action: "#" },
+                    on: {
+                      submit: function($event) {
+                        $event.preventDefault()
+                        return _vm.handleRegister($event)
                       }
                     }
-                  })
-                ]),
+                  },
+                  [
+                    _c("div", { staticClass: "form-row" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.formRegister.name,
+                            expression: "formRegister.name"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "text",
+                          name: "name",
+                          placeholder: "Name"
+                        },
+                        domProps: { value: _vm.formRegister.name },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.formRegister,
+                              "name",
+                              $event.target.value
+                            )
+                          }
+                        }
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-row" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.formRegister.email,
+                            expression: "formRegister.email"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "email",
+                          name: "email",
+                          placeholder: "Email Address"
+                        },
+                        domProps: { value: _vm.formRegister.email },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.formRegister,
+                              "email",
+                              $event.target.value
+                            )
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c("span", {
+                        domProps: { textContent: _vm._s(_vm.error.email) }
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-row" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.formRegister.password,
+                            expression: "formRegister.password"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "password",
+                          placeholder: "Password",
+                          name: "password"
+                        },
+                        domProps: { value: _vm.formRegister.password },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.formRegister,
+                              "password",
+                              $event.target.value
+                            )
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c("span", {
+                        domProps: { textContent: _vm._s(_vm.error.password) }
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-row" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.formRegister.password_confirmation,
+                            expression: "formRegister.password_confirmation"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "password",
+                          placeholder: "Password",
+                          name: "password_confirmation"
+                        },
+                        domProps: {
+                          value: _vm.formRegister.password_confirmation
+                        },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.formRegister,
+                              "password_confirmation",
+                              $event.target.value
+                            )
+                          }
+                        }
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-row" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-primary",
+                          attrs: { type: "submit" }
+                        },
+                        [_vm._v("Register")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "a",
+                        {
+                          staticClass: "btn btn-primary ml-3",
+                          staticStyle: { color: "white" },
+                          attrs: { href: _vm.google }
+                        },
+                        [_vm._v("Google Login")]
+                      )
+                    ])
+                  ]
+                ),
                 _vm._v(" "),
-                _c("div", { staticClass: "form-row" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-primary",
-                      attrs: { type: "submit" }
-                    },
-                    [_vm._v("Sign in")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "a",
-                    {
-                      staticClass: "btn btn-primary ml-3",
-                      staticStyle: { color: "white" },
-                      attrs: { href: _vm.google }
-                    },
-                    [_vm._v("Google Login")]
-                  )
-                ])
-              ]
-            )
-          ])
+                _c(
+                  "a",
+                  { attrs: { href: "#" }, on: { click: _vm.showLogin } },
+                  [_vm._v("Login")]
+                )
+              ])
+            : _vm._e()
         ])
       : _vm._e(),
     _vm._v(" "),
